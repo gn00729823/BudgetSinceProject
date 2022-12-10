@@ -101,10 +101,7 @@ namespace BudgetSinceProject
 
         private DateTime GetDateTime(int year, int month, int day)
         {
-
             return new DateTime(year, month, day);
-
-
         }
 
 
@@ -169,9 +166,8 @@ namespace BudgetSinceProject
 
         private int GetLeftDayOfMonth(DateTime cur, DateTime end)
         {
-            int monthOfDay = GetDaysInMonth(cur); //31
-            var dayToNextMonth = monthOfDay - cur.Day; //31-31 = 0
-            var monthOfLastDay = cur.AddDays(dayToNextMonth);//31+0=31
+            int monthOfDay = GetDaysInMonth(cur);
+            var monthOfLastDay = GetMonthLastDay(cur);
 
             if (monthOfLastDay.Day - cur.Day == 0)
             {
@@ -192,6 +188,10 @@ namespace BudgetSinceProject
             return DateTime.DaysInMonth(dataTime.Year, dataTime.Month);
         }
 
+        private DateTime GetMonthLastDay(DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, GetDaysInMonth(date));
+        }
     }
 
 
