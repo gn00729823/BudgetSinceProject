@@ -137,50 +137,22 @@ namespace BudgetSinceProject
 
         public double Query(DateTime start, DateTime end)
         {
-
             if (start > end)
                 return 0;
-
             double total = 0;
-            DateTime curDateTime = start;
-
-            while (curDateTime < new DateTime(end.Year, end.Month, 1).AddMonths(1))
+            DateTime cur = start;
+            while (cur <= end)
             {
-                int diffDay = 0;
-                if (curDateTime.Year == start.Year && curDateTime.Month == start.Month)
-                {
-                    if (start.Year == end.Year && start.Month == end.Month)
-                    {
-                        diffDay = end.Day - start.Day + 1;
-                    }
-                    else
-                    {
-                        diffDay = DateTime.DaysInMonth(start.Year, start.Month) - start.Day + 1;
-                    }
-                }
-                else if (curDateTime.Year == end.Year && curDateTime.Month == end.Month)
-                {
-                    diffDay = end.Day;
-                }
-                else
-                {
-                    diffDay = DateTime.DaysInMonth(curDateTime.Year, curDateTime.Month);
-                }
-
-
-
-                total += GetBudget(curDateTime, diffDay);
-
-
-
-
-
-                curDateTime = curDateTime.AddMonths(1);
-
+                total += GetBudget(cur, GetLeftDayOfMonth(cur, end));
+                cur = MoveToNextMonthFirstDay(cur);
             }
-
-
             return total;
+        }
+
+        private DateTime MoveToNextMonthFirstDay(DateTime cur)
+        {
+            var dayToNextMonth = GetDaysInMonth(cur) - cur.Day + 1;
+            return cur.AddDays(dayToNextMonth);
         }
 
         private double GetBudget(DateTime date, int day)
@@ -195,10 +167,31 @@ namespace BudgetSinceProject
             return (monthBudget.amount / startDaysInMonth) * day;
         }
 
-        private static int GetDaysInMonth(DateTime dataTime)
+        private int GetLeftDayOfMonth(DateTime cur, DateTime end)
+        {
+            int monthOfDay = GetDaysInMonth(cur); //31
+            var dayToNextMonth = monthOfDay - cur.Day; //31-31 = 0
+            var monthOfLastDay = cur.AddDays(dayToNextMonth);//31+0=31
+
+            if (monthOfLastDay.Day - cur.Day == 0)
+            {
+                return 1;
+            }
+            else if (end >= monthOfLastDay)
+            {
+                return monthOfDay;
+            }
+            else
+            {
+                return end.Day;
+            }
+        }
+
+        private int GetDaysInMonth(DateTime dataTime)
         {
             return DateTime.DaysInMonth(dataTime.Year, dataTime.Month);
         }
+
     }
 
 
